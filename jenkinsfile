@@ -1,0 +1,44 @@
+pipeline {
+    agent {
+        label 'SERVER02'
+    }
+    environment {
+        REPO_URL = 'https://github.com/babette22/docker-session8-01.git'
+        DOCKER_IMAGE = 'july-fourth'
+        DOCKER_TAG = 'latest'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: "${REPO_URL}"
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                }
+            }
+        }
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    sh "docker run -d -p 8087:80 --name my-container ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Clean up Docker container
+                def runningContainers = sh(script: "docker ps -q --filter 'name=my-container'", returnStdout: true).trim()
+                if (runningContainers) {
+                    sh 'docker rm -f my-container'
+                }
+            }
+        }
+    }
+}
