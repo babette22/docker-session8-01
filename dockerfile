@@ -21,5 +21,5 @@ VOLUME /usr/local/apache2/htdocs/saves
 # (Optional) Copy custom configuration file if needed
 # COPY ./my-httpd.conf /usr/local/apache2/conf/httpd.conf
 
-# (Optional) Expose port 80
-EXPOSE 80
+# Expose port 80
+EXPOSE 80
